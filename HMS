@@ -1,147 +1,124 @@
-Below is a high-level cybersecurity framework tailored to ensure a **Hospital Management System (HMS)** is secure. This framework is divided into phases, with specific actions and controls for each phase.
+import datetime
 
----
+# Data storage
+patients = []
+doctors = []
+appointments = []
 
-### **Cybersecurity Framework for HMS**
+# Patient class
+class Patient:
+    def __init__(self, patient_id, name, age, gender, contact):
+        self.patient_id = patient_id
+        self.name = name
+        self.age = age
+        self.gender = gender
+        self.contact = contact
 
-#### **1. Governance and Risk Management**
-   - **Objective**: Establish policies, roles, and risk management processes.
-   - **Actions**:
-     - Define a security governance structure (e.g., appoint a Chief Information Security Officer (CISO)).
-     - Conduct a risk assessment to identify threats, vulnerabilities, and critical assets.
-     - Develop a risk management plan to prioritize and mitigate risks.
-     - Align with regulatory requirements (e.g., HIPAA, GDPR, ISO 27001).
+# Doctor class
+class Doctor:
+    def __init__(self, doctor_id, name, specialization, contact):
+        self.doctor_id = doctor_id
+        self.name = name
+        self.specialization = specialization
+        self.contact = contact
 
----
+# Appointment class
+class Appointment:
+    def __init__(self, appointment_id, patient_id, doctor_id, date, time):
+        self.appointment_id = appointment_id
+        self.patient_id = patient_id
+        self.doctor_id = doctor_id
+        self.date = date
+        self.time = time
 
-#### **2. Secure System Design**
-   - **Objective**: Build security into the HMS from the ground up.
-   - **Actions**:
-     - Use **secure software development lifecycle (SDLC)** practices.
-     - Follow **OWASP Top 10** guidelines to prevent common vulnerabilities.
-     - Implement **role-based access control (RBAC)** to restrict access based on user roles.
-     - Encrypt sensitive data at rest (e.g., AES-256) and in transit (e.g., TLS 1.2+).
-     - Design for **high availability** with redundancy and failover mechanisms.
+# Add a new patient
+def add_patient():
+    patient_id = len(patients) + 1
+    name = input("Enter patient name: ")
+    age = int(input("Enter patient age: "))
+    gender = input("Enter patient gender (M/F): ")
+    contact = input("Enter patient contact: ")
+    patient = Patient(patient_id, name, age, gender, contact)
+    patients.append(patient)
+    print(f"Patient {name} added successfully!")
 
----
+# Add a new doctor
+def add_doctor():
+    doctor_id = len(doctors) + 1
+    name = input("Enter doctor name: ")
+    specialization = input("Enter doctor specialization: ")
+    contact = input("Enter doctor contact: ")
+    doctor = Doctor(doctor_id, name, specialization, contact)
+    doctors.append(doctor)
+    print(f"Doctor {name} added successfully!")
 
-#### **3. Identity and Access Management (IAM)**
-   - **Objective**: Ensure only authorized users can access the system.
-   - **Actions**:
-     - Implement **multi-factor authentication (MFA)** for all users.
-     - Enforce strong password policies (e.g., minimum length, complexity, expiration).
-     - Use a centralized IAM solution to manage user accounts and permissions.
-     - Regularly review and revoke access for inactive or unauthorized users.
+# Schedule an appointment
+def schedule_appointment():
+    if not patients:
+        print("No patients available. Add a patient first.")
+        return
+    if not doctors:
+        print("No doctors available. Add a doctor first.")
+        return
 
----
+    appointment_id = len(appointments) + 1
+    print("Available Patients:")
+    for patient in patients:
+        print(f"{patient.patient_id}. {patient.name}")
+    patient_id = int(input("Enter patient ID: "))
 
-#### **4. Data Protection**
-   - **Objective**: Safeguard sensitive patient and hospital data.
-   - **Actions**:
-     - Encrypt all sensitive data stored in databases and backups.
-     - Use secure APIs for data exchange between systems.
-     - Implement data masking for non-production environments.
-     - Regularly back up data and store backups securely (e.g., offsite or cloud-based).
+    print("Available Doctors:")
+    for doctor in doctors:
+        print(f"{doctor.doctor_id}. {doctor.name} ({doctor.specialization})")
+    doctor_id = int(input("Enter doctor ID: "))
 
----
+    date = input("Enter appointment date (YYYY-MM-DD): ")
+    time = input("Enter appointment time (HH:MM): ")
 
-#### **5. Network Security**
-   - **Objective**: Protect the HMS from external and internal network threats.
-   - **Actions**:
-     - Deploy firewalls and intrusion detection/prevention systems (IDS/IPS).
-     - Segment the network to isolate critical systems (e.g., separate patient data from public-facing systems).
-     - Use a Virtual Private Network (VPN) for remote access.
-     - Monitor network traffic for anomalies using a Security Information and Event Management (SIEM) system.
+    appointment = Appointment(appointment_id, patient_id, doctor_id, date, time)
+    appointments.append(appointment)
+    print("Appointment scheduled successfully!")
 
----
+# View all appointments
+def view_appointments():
+    if not appointments:
+        print("No appointments scheduled.")
+        return
+    print("Scheduled Appointments:")
+    for appointment in appointments:
+        patient = next(p for p in patients if p.patient_id == appointment.patient_id)
+        doctor = next(d for d in doctors if d.doctor_id == appointment.doctor_id)
+        print(f"Appointment ID: {appointment.appointment_id}")
+        print(f"  Patient: {patient.name}")
+        print(f"  Doctor: {doctor.name} ({doctor.specialization})")
+        print(f"  Date: {appointment.date}, Time: {appointment.time}")
+        print("-" * 30)
 
-#### **6. Application Security**
-   - **Objective**: Secure the HMS application against vulnerabilities.
-   - **Actions**:
-     - Perform regular vulnerability scans and penetration testing.
-     - Use static and dynamic application security testing (SAST/DAST) tools.
-     - Sanitize and validate all user inputs to prevent injection attacks.
-     - Implement secure session management (e.g., session timeouts, secure cookies).
+# Main menu
+def main_menu():
+    while True:
+        print("\nHospital Management System")
+        print("1. Add Patient")
+        print("2. Add Doctor")
+        print("3. Schedule Appointment")
+        print("4. View Appointments")
+        print("5. Exit")
+        choice = input("Enter your choice: ")
 
----
+        if choice == "1":
+            add_patient()
+        elif choice == "2":
+            add_doctor()
+        elif choice == "3":
+            schedule_appointment()
+        elif choice == "4":
+            view_appointments()
+        elif choice == "5":
+            print("Exiting the system. Goodbye!")
+            break
+        else:
+            print("Invalid choice. Please try again.")
 
-#### **7. Monitoring and Logging**
-   - **Objective**: Detect and respond to security incidents in real-time.
-   - **Actions**:
-     - Enable logging for all critical actions (e.g., login attempts, data access).
-     - Centralize logs using a SIEM tool for analysis and correlation.
-     - Set up alerts for suspicious activities (e.g., multiple failed login attempts).
-     - Conduct regular log reviews to identify potential threats.
-
----
-
-#### **8. Incident Response**
-   - **Objective**: Minimize the impact of security incidents.
-   - **Actions**:
-     - Develop an incident response plan with defined roles and procedures.
-     - Establish a communication plan for notifying stakeholders and regulatory bodies.
-     - Conduct regular incident response drills (e.g., ransomware attack simulations).
-     - Maintain a forensic readiness plan to collect and analyze evidence after an incident.
-
----
-
-#### **9. Compliance and Audit**
-   - **Objective**: Ensure adherence to regulatory and industry standards.
-   - **Actions**:
-     - Conduct regular audits to verify compliance with HIPAA, GDPR, or other applicable regulations.
-     - Document all security measures and policies for regulatory review.
-     - Use compliance management tools to track and report adherence to standards.
-
----
-
-#### **10. Continuous Improvement**
-   - **Objective**: Adapt to evolving threats and improve security posture.
-   - **Actions**:
-     - Regularly update security policies and procedures.
-     - Stay informed about emerging threats and vulnerabilities.
-     - Gather feedback from users and stakeholders to identify areas for improvement.
-     - Invest in ongoing training for staff and IT personnel.
-
----
-
-### **Implementation Checklist**
-Here’s a summarized checklist to guide implementation:
-
-1. **Governance**:
-   - [ ] Appoint a security officer and define roles.
-   - [ ] Conduct a risk assessment.
-   - [ ] Develop security policies.
-
-2. **Technical Controls**:
-   - [ ] Encrypt data at rest and in transit.
-   - [ ] Implement MFA and RBAC.
-   - [ ] Deploy firewalls, IDS/IPS, and SIEM.
-
-3. **Development Practices**:
-   - [ ] Follow secure coding standards (e.g., OWASP).
-   - [ ] Perform regular vulnerability scans and penetration tests.
-
-4. **Monitoring and Response**:
-   - [ ] Enable centralized logging.
-   - [ ] Develop and test an incident response plan.
-
-5. **Compliance**:
-   - [ ] Align with HIPAA, GDPR, or other regulations.
-   - [ ] Conduct regular audits and document compliance efforts.
-
-6. **Training**:
-   - [ ] Train staff on cybersecurity best practices.
-   - [ ] Conduct phishing simulations and awareness programs.
-
----
-
-### **Tools and Technologies**
-- **Encryption**: OpenSSL, HashiCorp Vault.
-- **IAM**: Okta, Microsoft Azure AD.
-- **Monitoring**: Splunk, ELK Stack.
-- **Vulnerability Scanning**: Nessus, Qualys.
-- **Compliance**: HITRUST CSF tools, GDPR compliance platforms.
-
----
-
-This framework provides a structured approach to securing an HMS. Each phase should be implemented iteratively, with regular reviews to ensure the system remains secure and compliant.
+# Run the program
+if __name__ == "__main__":
+    main_menu()
